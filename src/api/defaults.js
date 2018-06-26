@@ -1,7 +1,7 @@
-import drawer from './client/drawer/defaults'
+import { getDrawer } from './client/drawer/queries'
 
 const defaults = {
-    drawer
+  drawer: getDrawer.defaults
 }
 
 export default defaults

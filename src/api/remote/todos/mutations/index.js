@@ -1,2 +1,3 @@
-export { default as CREATE_TODO } from './CREATE_TODO'
-export { default as TOGGLE_TODO } from './TOGGLE_TODO'
+export * as toggleTodo from './toggleTodo'
+export * as deleteTodo from './deleteTodo'
+export * as createTodo from './createTodo'

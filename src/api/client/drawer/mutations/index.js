@@ -1,1 +1,1 @@
-export { default as TOGGLE_DRAWER } from './TOGGLE_DRAWER'
+export * as toggleDrawer from './toggleDrawer'

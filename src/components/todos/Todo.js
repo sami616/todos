@@ -1,28 +1,14 @@
-import React, { Fragment as F} from 'react'
-import { Mutation } from 'react-apollo'
-import { TOGGLE_TODO } from '../../api/remote/todos/mutations'
-import { toggleTodo } from '../../api/remote/todos/update'
+import React, { Fragment as F } from 'react'
+import { ToggleTodo } from './'
+import { DeleteTodo } from './'
 
-const Todo = ({ todo }) => {
-    return (
-        <p>
-            {todo.title}
-            <Mutation
-            update={toggleTodo}
-            mutation={TOGGLE_TODO}
-            variables={{ 
-                data: { completed: !todo.complete },
-                where: { id: todo.id  }
-            }}>
-            {(updateTodo, status) => (               
-                    <F>
-                        <button onClick={updateTodo}>Toggle</button>
-                        {status.error && <p>There was a problem adding your todo</p>}
-                    </F>
-                )}
-            </Mutation>
-        </p>
-    )
+const Todo = props => {
+  return (
+    <p>
+      {props.todo.title} <ToggleTodo {...props} />
+      {props.todo.completed && <DeleteTodo {...props} />}
+    </p>
+  )
 }
 
 export default Todo
