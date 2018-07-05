@@ -1,21 +1,34 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { Mutation } from 'react-apollo'
-
-// Todos @remote
-import { createTodo } from '../../api/remote/todos/mutations'
+import * as createTodo from '../../api/remote/todos/mutations/createTodo'
+import { ToasterConsumer } from '../toaster/context'
+import styled from 'styled-components'
+import { ic_add } from 'react-icons-kit/md/ic_add'
+import Icon from 'react-icons-kit'
 
 class AddTodo extends Component {
   state = {
     title: ''
   }
 
-  onTodoCreate = async createTodo => {
+  onTodoCreate = async (createTodo, e, addToast) => {
+    e.preventDefault()
     const title = this.state.title.trim()
+    this.setState({ title: '' })
     if (title) {
-      await createTodo()
-      this.setState({ title: '' })
+      try {
+        await createTodo()
+      } catch (err) {
+        addToast({
+          type: 'error',
+          msg: 'Whoops, something went wrong'
+        })
+      }
     } else {
-      alert('Please type a todo')
+      addToast({
+        type: 'error',
+        msg: 'Please type a todo'
+      })
     }
   }
 
@@ -24,21 +37,37 @@ class AddTodo extends Component {
       <Mutation
         {...createTodo}
         optimisticResponse={createTodo.optimisticResponse({
-          title: this.state.title
+          properties: {
+            title: this.state.title,
+            completed: false,
+            id: `temp_id_${Math.random()}`
+          }
         })}
-        variables={createTodo.variables({ title: this.state.title })}>
+        variables={createTodo.variables({
+          properties: {
+            title: this.state.title,
+            completed: false
+          }
+        })}>
         {(createTodo, status) => (
-          <Fragment>
-            <input
-              type="text"
-              value={this.state.title}
-              onChange={e => this.setState({ title: e.target.value })}
-            />
-            <button onClick={() => this.onTodoCreate(createTodo)}>
-              Create Todo
-            </button>
-            {status.error && <p>There was a problem adding your todo</p>}
-          </Fragment>
+          <ToasterConsumer>
+            {toaster => (
+              <Form
+                onSubmit={e =>
+                  this.onTodoCreate(createTodo, e, toaster.actions.addToast)
+                }>
+                <input
+                  placeholder="Add a todo"
+                  type="text"
+                  value={this.state.title}
+                  onChange={e => this.setState({ title: e.target.value })}
+                />
+                <button>
+                  <Icon size={25} icon={ic_add} />
+                </button>
+              </Form>
+            )}
+          </ToasterConsumer>
         )}
       </Mutation>
     )
@@ -46,3 +75,30 @@ class AddTodo extends Component {
 }
 
 export default AddTodo
+
+const Form = styled.form`
+  display: flex;
+  input {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    outline: none;
+    color: #848282;
+    border-radius: 4px 0 0 4px;
+    border: 1px solid #e4e4e4;
+    border-right: none;
+    font-weight: 300;
+  }
+
+  button {
+    padding: 0;
+    width: 80px;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background: ${props => props.theme.secondaryColor};
+    color: #fff;
+    font-size: 16px;
+    border-radius: 0 4px 4px 0;
+  }
+`

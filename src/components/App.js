@@ -1,21 +1,19 @@
-import React, { Fragment as F } from 'react'
-import { Query, Mutation } from 'react-apollo'
-import { getDrawer } from '../api/client/drawer/queries'
-import { toggleDrawer } from '../api/client/drawer/mutations'
+import React from 'react'
 import { Todos } from './todos'
+import { injectGlobal } from 'styled-components'
 
-const App = props => (
-  <F>
-    <Todos />
+injectGlobal`
+  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400');
 
-    <Mutation mutation={toggleDrawer.mutation}>
-      {toggleDrawer => <button onClick={toggleDrawer}>Toggle</button>}
-    </Mutation>
+  * {
+    box-sizing: border-box;
+  }
 
-    <Query query={getDrawer.query}>
-      {({ data }) => (data.drawer.open ? 'Drawer Open' : 'Drawer Closed')}
-    </Query>
-  </F>
-)
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+  }
+`
 
+const App = () => <Todos />
 export default App

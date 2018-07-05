@@ -1,7 +1,9 @@
-import { getDrawer } from './client/drawer/queries'
+import { defaults as modal } from './client/modal/defaults'
+import { defaults as selected } from './client/selected-todo/defaults'
 
 const defaults = {
-  drawer: getDrawer.defaults
+  modal,
+  selected
 }
 
 export default defaults

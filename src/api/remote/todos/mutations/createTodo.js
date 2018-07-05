@@ -1,7 +1,5 @@
 import gql from 'graphql-tag'
-import { getTodos } from '../queries'
-
-const { query } = getTodos
+import { query } from '../queries/getTodos'
 
 export const mutation = gql`
   mutation($data: TodoCreateInput!) {
@@ -14,7 +12,7 @@ export const mutation = gql`
 `
 
 export const variables = props => ({
-  data: { title: props.title, completed: false }
+  data: { ...props.properties }
 })
 
 export const update = (cache, { data: { createTodo } }) => {
@@ -25,8 +23,6 @@ export const update = (cache, { data: { createTodo } }) => {
 export const optimisticResponse = props => ({
   createTodo: {
     __typename: 'Todo',
-    title: props.title,
-    completed: false,
-    id: Math.random()
+    ...props.properties
   }
 })
