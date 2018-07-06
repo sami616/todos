@@ -24,12 +24,15 @@ const ToggleTodo = props => {
       mutation={updateTodo.mutation}
       variables={updateTodo.variables({
         id: props.todo.id,
-        properties: { completed: !props.todo.completed }
+        properties: {
+          completed: !props.todo.completed,
+          position: props.oppositeLength + 1
+        }
       })}
       optimisticResponse={updateTodo.optimisticResponse({
-        title: props.todo.title,
-        id: props.todo.id,
-        completed: !props.todo.completed
+        ...props.todo,
+        completed: !props.todo.completed,
+        position: props.oppositeLength + 1
       })}>
       {updateTodo => (
         <ToasterConsumer>

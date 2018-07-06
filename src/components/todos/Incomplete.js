@@ -33,35 +33,43 @@ class Incomplete extends Component {
   render() {
     return (
       <F>
-        <AddTodo />
-
         <Query query={query}>
           {res => {
-            if (res.loading) return <p>Loading</p>
-            if (res.error) return <p>Error</p>
-            const incomplete = res.data.todoes.filter(todo => !todo.completed)
-            if (!incomplete.length) return <p>No todos</p>
+            let incomplete = []
+            let completeLength = 0
+            if (res.data.todoes) {
+              incomplete = res.data.todoes.filter(todo => !todo.completed)
+              completeLength = res.data.todoes.filter(todo => todo.completed)
+                .length
+            }
+
             return (
               <F>
+                <AddTodo count={incomplete.length} />
+                {res.loading && <p>Loading</p>}
+                {res.error && <p>Error</p>}
+                {!incomplete.length && <p>No todos</p>}
                 {incomplete.map(todo => (
                   <Todo
+                    oppositeLength={completeLength}
                     selected={this.state.selected}
                     toggleSelected={this.toggleSelected}
                     key={todo.id}
                     todo={todo}
                   />
                 ))}
+
+                <MultiToggle
+                  oppositeLength={completeLength}
+                  setSelected={this.setSelected}
+                  clearSelected={this.clearSelected}
+                  completed={false}
+                  selected={this.state.selected}
+                />
               </F>
             )
           }}
         </Query>
-
-        <MultiToggle
-          setSelected={this.setSelected}
-          clearSelected={this.clearSelected}
-          completed={false}
-          selected={this.state.selected}
-        />
       </F>
     )
   }

@@ -29,7 +29,10 @@ const Todo = props => {
         {isAdded() &&
           !isSelected() && (
             <F>
-              <ToggleTodo todo={props.todo} />
+              <ToggleTodo
+                oppositeLength={props.oppositeLength}
+                todo={props.todo}
+              />
               {props.todo.completed ? (
                 <DeleteTodo todo={props.todo} />
               ) : (

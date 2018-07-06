@@ -36,11 +36,15 @@ class Complete extends Component {
           if (res.loading) return <p>Loading</p>
           if (res.error) return <p>Error</p>
           const complete = res.data.todoes.filter(todo => todo.completed)
+          const incompleteLength = res.data.todoes.filter(
+            todo => !todo.completed
+          ).length
           if (!complete.length) return <p>No todos</p>
           return (
             <F>
               {complete.map(todo => (
                 <Todo
+                  oppositeLength={incompleteLength}
                   selected={this.state.selected}
                   toggleSelected={this.toggleSelected}
                   key={todo.id}
@@ -54,6 +58,7 @@ class Complete extends Component {
                   selected={this.state.selected}
                 />
                 <MultiToggle
+                  oppositeLength={incompleteLength}
                   setSelected={this.setSelected}
                   clearSelected={this.clearSelected}
                   completed={true}

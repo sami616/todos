@@ -2,4 +2,5 @@ type Todo {
   id: ID! @unique
   title: String!
   completed: Boolean!
+  position: Int!
 }

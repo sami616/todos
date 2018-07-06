@@ -40,13 +40,15 @@ class AddTodo extends Component {
           properties: {
             title: this.state.title,
             completed: false,
-            id: `temp_id_${Math.random()}`
+            id: `temp_id_${Math.random()}`,
+            position: this.props.count + 1
           }
         })}
         variables={createTodo.variables({
           properties: {
             title: this.state.title,
-            completed: false
+            completed: false,
+            position: this.props.count + 1
           }
         })}>
         {(createTodo, status) => (

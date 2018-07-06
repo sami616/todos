@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Mutation } from 'react-apollo'
 import * as updateManyTodos from '../../api/remote/todos/mutations/updateManyTodos'
+import * as updateTodo from '../../api/remote/todos/mutations/updateTodo'
 import { ToasterConsumer } from '../toaster/context'
 
 const MultiToggle = props => {
@@ -18,6 +19,36 @@ const MultiToggle = props => {
       })
     }
   }
+
+  // const toggleTodo = id => {
+  //   return (
+  //     <Mutation
+  //       mutation={updateTodo.mutation}
+  //       variables={updateTodo.variables({
+  //         id: id,
+  //         properties: {
+  //           completed: !props.completed,
+  //           position: props.todo.position
+  //         }
+  //       })}
+  //       optimisticResponse={updateTodo.optimisticResponse({
+  //         ...props.todo,
+  //         completed: !props.todo.completed,
+  //         position: props.todo.position
+  //       })}>
+  //       {updateTodo => updateTodo()}
+  //     </Mutation>
+  //   )
+  // }
+
+  // return props.selected.length !== 0 ? (
+  //   <ToggleBtn
+  //     onClick={() => {
+  //       props.selected.map(id => toggleTodo(id))
+  //     }}>
+  //     Mark as {props.completed ? 'incomplete' : 'complete'}
+  //   </ToggleBtn>
+  // ) : null
 
   return (
     <Mutation

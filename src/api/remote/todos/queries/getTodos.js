@@ -6,6 +6,7 @@ export const query = gql`
       id
       title
       completed
+      position
     }
   }
 `

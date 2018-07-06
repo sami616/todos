@@ -37,9 +37,8 @@ class EditTodo extends Component {
           properties: { title: this.state.editTitle }
         })}
         optimisticResponse={updateTodo.optimisticResponse({
-          title: this.state.editTitle,
-          id: this.props.todo.id,
-          completed: this.props.todo.completed
+          ...this.props.todo,
+          title: this.state.editTitle
         })}>
         {updateTodo => (
           <ToasterConsumer>
