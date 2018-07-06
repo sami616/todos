@@ -21,6 +21,7 @@ const Overlay = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
+  box-shadow: 0 0 8px 0px rgba(78, 78, 78, 0.69);
   background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
@@ -29,5 +30,7 @@ const Overlay = styled.div`
 
 const Box = styled.div`
   background: #fff;
-  padding: 20px;
+  padding: 40px;
+  width: 50vw;
+  border-radius: 4px;
 `

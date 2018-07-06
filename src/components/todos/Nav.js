@@ -15,10 +15,12 @@ export default Nav
 
 const NavWrap = styled.div`
   display: flex;
-  justify-content: flex-end;
+  width: 100%;
+  /* justify-content: flex-end; */
   a {
     background: #fff;
     color: ${props => props.theme.primaryColor};
+    flex: 1 0 auto;
     &.active {
       background: ${props => props.theme.primaryColor};
       color: #fff;

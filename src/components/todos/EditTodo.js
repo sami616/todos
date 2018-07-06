@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Mutation } from 'react-apollo'
 import * as updateTodo from '../../api/remote/todos/mutations/updateTodo'
 import { ToasterConsumer } from '../toaster/context'
+import { Form } from './'
 
 class EditTodo extends Component {
   state = {
@@ -43,17 +44,18 @@ class EditTodo extends Component {
         {updateTodo => (
           <ToasterConsumer>
             {toaster => (
-              <form
+              <Form
                 onSubmit={e => {
                   this.handleUpdate(updateTodo, toaster.actions.addToast, e)
                 }}>
+                <h2>Edit todo</h2>
                 <input
                   type="text"
                   onChange={e => this.setState({ editTitle: e.target.value })}
                   value={this.state.editTitle}
                 />
-                <button>Update</button>
-              </form>
+                <button className="inputButton">Update</button>
+              </Form>
             )}
           </ToasterConsumer>
         )}

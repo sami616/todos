@@ -1,7 +1,8 @@
-import React, { Fragment as F } from 'react'
+import React from 'react'
 import { Mutation } from 'react-apollo'
 import * as deleteManyTodos from '../../api/remote/todos/mutations/deleteManyTodos'
 import { ToasterConsumer } from '../toaster/context'
+import { Form } from './'
 
 const MultiDelete = props => {
   const handleDelete = async (deleteManyTodos, addToast) => {
@@ -30,20 +31,24 @@ const MultiDelete = props => {
         count: props.selected.length
       })}>
       {deleteManyTodos => (
-        <F>
-          <p>Are you sure you want to delete</p>
-
-          <ToasterConsumer>
-            {toaster => (
+        <ToasterConsumer>
+          {toaster => (
+            <Form>
+              <h2>Delete selected todos?</h2>
               <button
+                className="blue"
                 onClick={() => {
                   handleDelete(deleteManyTodos, toaster.actions.addToast)
                 }}>
                 Delete
               </button>
-            )}
-          </ToasterConsumer>
-        </F>
+
+              <button className="green" onClick={() => props.close()}>
+                Cancel
+              </button>
+            </Form>
+          )}
+        </ToasterConsumer>
       )}
     </Mutation>
   )

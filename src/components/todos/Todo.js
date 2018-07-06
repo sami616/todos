@@ -62,6 +62,7 @@ const Actions = styled.div`
 const Item = styled.div`
   span {
     line-height: 25px;
+    font-weight: 300;
   }
   min-height: 80px;
   padding: 20px 0;
