@@ -42,5 +42,7 @@ const Form = styled.form`
     font-size: 16px;
   }
 `
+const FormDiv = Form.withComponent('div') // huh? prquois no wokingz? when wors update in multi toggle
 
 export default Form
+export { FormDiv }

@@ -6,7 +6,7 @@ import * as updateTodo from '../../api/remote/todos/mutations/updateTodo'
 import { ToasterConsumer } from '../toaster/context'
 
 const MultiToggle = props => {
-  const handleToggle = async (toggleManyTodos, addToast) => {
+  const handleToggle = async (toggleManyTodos, updateIndex, addToast) => {
     const selected = [...props.selected]
     props.clearSelected()
     try {
@@ -20,36 +20,6 @@ const MultiToggle = props => {
     }
   }
 
-  // const toggleTodo = id => {
-  //   return (
-  //     <Mutation
-  //       mutation={updateTodo.mutation}
-  //       variables={updateTodo.variables({
-  //         id: id,
-  //         properties: {
-  //           completed: !props.completed,
-  //           position: props.todo.position
-  //         }
-  //       })}
-  //       optimisticResponse={updateTodo.optimisticResponse({
-  //         ...props.todo,
-  //         completed: !props.todo.completed,
-  //         position: props.todo.position
-  //       })}>
-  //       {updateTodo => updateTodo()}
-  //     </Mutation>
-  //   )
-  // }
-
-  // return props.selected.length !== 0 ? (
-  //   <ToggleBtn
-  //     onClick={() => {
-  //       props.selected.map(id => toggleTodo(id))
-  //     }}>
-  //     Mark as {props.completed ? 'incomplete' : 'complete'}
-  //   </ToggleBtn>
-  // ) : null
-
   return (
     <Mutation
       variables={updateManyTodos.variables({
@@ -59,7 +29,7 @@ const MultiToggle = props => {
       mutation={updateManyTodos.mutation}
       update={(cache, data) =>
         updateManyTodos.update(cache, data, {
-          ids: props.selected,
+          selected: props.selected,
           properties: {
             completed: !props.completed
           }
@@ -72,12 +42,20 @@ const MultiToggle = props => {
         props.selected.length !== 0 && (
           <ToasterConsumer>
             {toaster => (
-              <ToggleBtn
-                onClick={() => {
-                  handleToggle(updateManyTodos, toaster.actions.addToast)
-                }}>
-                Mark as {props.completed ? 'incomplete' : 'complete'}
-              </ToggleBtn>
+              <Mutation mutation={updateTodo.mutation}>
+                {updateIndex => (
+                  <ToggleBtn
+                    onClick={() => {
+                      handleToggle(
+                        updateManyTodos,
+                        updateIndex,
+                        toaster.actions.addToast
+                      )
+                    }}>
+                    Mark as {props.completed ? 'incomplete' : 'complete'}
+                  </ToggleBtn>
+                )}
+              </Mutation>
             )}
           </ToasterConsumer>
         )
@@ -97,7 +75,7 @@ const ToggleBtn = styled.button`
   border-radius: 4px;
   font-size: 16px;
   border: 1px solid orange;
-  outline: none
+  outline: none;
   margin: 20px 0 0 5px;
   color: orange;
   &:hover {

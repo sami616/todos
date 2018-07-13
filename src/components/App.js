@@ -10,6 +10,10 @@ injectGlobal`
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0); 
   }
 
+  .dragged-item {
+    box-shadow: 0 0 5px #ccc;
+  }
+
   body {
     margin: 0;
     font-family: 'Roboto', sans-serif;

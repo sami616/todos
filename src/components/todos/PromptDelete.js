@@ -17,6 +17,7 @@ class PromptDelete extends Component {
         )}
 
         <DeleteModal
+          todos={this.props.todos}
           setSelected={this.props.setSelected}
           clearSelected={this.props.clearSelected}
           selected={this.props.selected}
@@ -39,7 +40,7 @@ const DeleteBtn = styled.button`
   font-size: 16px;
   margin: 20px 0 0 5px;
   border: 1px solid red;
-  outline: none
+  outline: none;
   color: red;
   &:hover {
     background: red;

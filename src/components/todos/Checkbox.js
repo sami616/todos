@@ -4,7 +4,7 @@ import styled from 'styled-components'
 const Checkbox = props => {
   return (
     <Input
-      onChange={() => props.toggleSelected(props.todo.id)}
+      onChange={() => props.toggleSelected(props.todo)}
       checked={props.isSelected() ? true : false}
       type="checkbox"
     />
@@ -16,7 +16,7 @@ export default Checkbox
 const Input = styled.input`
   appearance: none;
   width: 20px;
-  outline: none
+  outline: none;
   height: 20px;
   border-radius: 50%;
   border: 1px solid #ccc;

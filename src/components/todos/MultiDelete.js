@@ -1,52 +1,97 @@
 import React from 'react'
 import { Mutation } from 'react-apollo'
 import * as deleteManyTodos from '../../api/remote/todos/mutations/deleteManyTodos'
+import * as updateTodo from '../../api/remote/todos/mutations/updateTodo'
 import { ToasterConsumer } from '../toaster/context'
-import { Form } from './'
+import { FormDiv } from './'
 
 const MultiDelete = props => {
-  const handleDelete = async (deleteManyTodos, addToast) => {
+  const handleDelete = async (deleteManyTodos, updateIndex, addToast) => {
     const selected = [...props.selected]
     props.clearSelected()
     props.close()
+
+    const promisesToAwait = []
+    promisesToAwait.push(deleteManyTodos())
+
+    const selectedIDs = selected.map(item => item.id)
+
+    const filtered = props.todos.filter(
+      propTodo => !selectedIDs.includes(propTodo.id)
+    )
+
+    filtered.forEach((todo, index) => {
+      promisesToAwait.push(
+        updateIndex({
+          variables: updateTodo.variables({
+            id: todo.id,
+            properties: {
+              position: index
+            }
+          }),
+          optimisticResponse: updateTodo.optimisticResponse({
+            ...todo,
+            position: index
+          })
+        })
+      )
+    })
+
     try {
-      await deleteManyTodos()
+      await Promise.all(promisesToAwait)
     } catch (e) {
       props.setSelected(selected)
       addToast({
         type: 'error',
-        msg: 'Whoops, there was a problem deleting your todos'
+        msg: 'Problem moving todo'
       })
     }
+
+    // try {
+    //   await deleteManyTodos()
+    // } catch (e) {
+    //   props.setSelected(selected)
+    //   addToast({
+    //     type: 'error',
+    //     msg: 'Whoops, there was a problem deleting your todos'
+    //   })
+    // }
   }
 
   return (
     <Mutation
       mutation={deleteManyTodos.mutation}
       update={(cache, data) =>
-        deleteManyTodos.update(cache, data, props.selected)
+        deleteManyTodos.update(cache, data, { selected: props.selected })
       }
-      variables={deleteManyTodos.variables({ ids: props.selected })}
+      variables={deleteManyTodos.variables({ selected: props.selected })}
       optimisticResponse={deleteManyTodos.optimisticResponse({
         count: props.selected.length
       })}>
       {deleteManyTodos => (
         <ToasterConsumer>
           {toaster => (
-            <Form>
+            <FormDiv>
               <h2>Delete selected todos?</h2>
-              <button
-                className="blue"
-                onClick={() => {
-                  handleDelete(deleteManyTodos, toaster.actions.addToast)
-                }}>
-                Delete
-              </button>
-
+              <Mutation mutation={updateTodo.mutation}>
+                {updateIndex => (
+                  <button
+                    className="blue"
+                    onClick={() => {
+                      handleDelete(
+                        deleteManyTodos,
+                        updateIndex,
+                        toaster.actions.addToast
+                      )
+                    }}>
+                    Delete
+                  </button>
+                )}
+              </Mutation>
               <button className="green" onClick={() => props.close()}>
                 Cancel
               </button>
-            </Form>
+            </FormDiv>
           )}
         </ToasterConsumer>
       )}

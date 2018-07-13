@@ -6,6 +6,7 @@ export const mutation = gql`
       id
       title
       completed
+      position
     }
   }
 `

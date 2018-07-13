@@ -8,40 +8,67 @@ import styled from 'styled-components'
 import { ToasterConsumer } from '../toaster/context'
 
 const ToggleTodo = props => {
-  const handleToggle = async (updateTodo, addToast) => {
+  const handleToggle = async (toggleTodo, addToast) => {
+    const promisesToAwait = []
+
+    promisesToAwait.push(
+      toggleTodo({
+        variables: updateTodo.variables({
+          id: props.todo.id,
+          properties: {
+            completed: !props.todo.completed,
+            position: props.oppositeLength
+          }
+        }),
+        optimisticResponse: updateTodo.optimisticResponse({
+          ...props.todo,
+          completed: !props.todo.completed,
+          position: props.oppositeLength
+        })
+      })
+    )
+
+    const filtered = props.todos.filter(
+      propTodo => propTodo.id !== props.todo.id
+    )
+
+    filtered.forEach((todo, index) => {
+      promisesToAwait.push(
+        toggleTodo({
+          variables: updateTodo.variables({
+            id: todo.id,
+            properties: {
+              position: index
+            }
+          }),
+          optimisticResponse: updateTodo.optimisticResponse({
+            ...todo,
+            position: index
+          })
+        })
+      )
+    })
+
     try {
-      await updateTodo()
+      await Promise.all(promisesToAwait)
     } catch (e) {
       addToast({
         type: 'error',
-        msg: 'Whoops, there was a problem moving your todos'
+        msg: 'Problem moving todo'
       })
     }
   }
 
   return (
-    <Mutation
-      mutation={updateTodo.mutation}
-      variables={updateTodo.variables({
-        id: props.todo.id,
-        properties: {
-          completed: !props.todo.completed,
-          position: props.oppositeLength + 1
-        }
-      })}
-      optimisticResponse={updateTodo.optimisticResponse({
-        ...props.todo,
-        completed: !props.todo.completed,
-        position: props.oppositeLength + 1
-      })}>
-      {updateTodo => (
+    <Mutation mutation={updateTodo.mutation}>
+      {toggleTodo => (
         <ToasterConsumer>
           {toaster =>
             props.todo.completed ? (
               <Ico
                 completed={`${props.todo.completed}`}
                 onClick={() => {
-                  handleToggle(updateTodo, toaster.actions.addToast)
+                  handleToggle(toggleTodo, toaster.actions.addToast)
                 }}
                 icon={ic_settings_backup_restore}
               />
@@ -49,7 +76,7 @@ const ToggleTodo = props => {
               <Ico
                 completed={`${props.todo.completed}`}
                 onClick={() => {
-                  handleToggle(updateTodo, toaster.actions.addToast)
+                  handleToggle(toggleTodo, toaster.actions.addToast)
                 }}
                 icon={ic_done}
               />

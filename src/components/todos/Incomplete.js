@@ -1,26 +1,31 @@
 import React, { Component, Fragment as F } from 'react'
-import { Query } from 'react-apollo'
+import { Query, Mutation } from 'react-apollo'
 import { query } from '../../api/remote/todos/queries/getTodos'
+import * as updateTodoMutation from '../../api/remote/todos/mutations/updateTodo'
+import { ToasterConsumer } from '../toaster/context'
+import { arrayMove } from 'react-sortable-hoc'
 import { AddTodo } from './'
-import { Todo } from './'
 import { MultiToggle } from './'
+import { List } from './'
 
 class Incomplete extends Component {
   state = {
     selected: []
   }
 
-  toggleSelected = id => {
-    this.setState(state => ({
-      selected: state.selected.includes(id)
-        ? state.selected.filter(arrID => id !== arrID)
-        : [...state.selected, id]
-    }))
+  toggleSelected = todo => {
+    if (this.state.selected.filter(obj => obj.id === todo.id).length > 0) {
+      this.setState({
+        selected: this.state.selected.filter(obj => todo.id !== obj.id)
+      })
+    } else {
+      this.setState({ selected: [...this.state.selected, todo] })
+    }
   }
 
-  setSelected = idArr => {
+  setSelected = todoArr => {
     this.setState(state => ({
-      selected: idArr
+      selected: todoArr
     }))
   }
 
@@ -30,6 +35,37 @@ class Incomplete extends Component {
     }))
   }
 
+  onSortEnd = async (oldIndex, newIndex, updateTodo, todos, addToast) => {
+    const sortedTodos = arrayMove(todos, oldIndex, newIndex)
+
+    const promisesToAwait = []
+    sortedTodos.forEach((todo, index) => {
+      promisesToAwait.push(
+        updateTodo({
+          variables: updateTodoMutation.variables({
+            id: todo.id,
+            properties: {
+              position: index
+            }
+          }),
+          optimisticResponse: updateTodoMutation.optimisticResponse({
+            ...todo,
+            position: index
+          })
+        })
+      )
+    })
+
+    try {
+      await Promise.all(promisesToAwait)
+    } catch (e) {
+      addToast({
+        type: 'error',
+        msg: 'Problem moving todo'
+      })
+    }
+  }
+
   render() {
     return (
       <F>
@@ -37,8 +73,14 @@ class Incomplete extends Component {
           {res => {
             let incomplete = []
             let completeLength = 0
-            if (res.data.todoes) {
-              incomplete = res.data.todoes.filter(todo => !todo.completed)
+
+            if (res.data && res.data.todoes) {
+              incomplete = res.data.todoes
+                .filter(todo => !todo.completed)
+                .sort(function(a, b) {
+                  return a.position - b.position
+                })
+
               completeLength = res.data.todoes.filter(todo => todo.completed)
                 .length
             }
@@ -48,18 +90,37 @@ class Incomplete extends Component {
                 <AddTodo count={incomplete.length} />
                 {res.loading && <p>Loading</p>}
                 {res.error && <p>Error</p>}
-                {!incomplete.length && <p>No todos</p>}
-                {incomplete.map(todo => (
-                  <Todo
-                    oppositeLength={completeLength}
-                    selected={this.state.selected}
-                    toggleSelected={this.toggleSelected}
-                    key={todo.id}
-                    todo={todo}
-                  />
-                ))}
+                {!incomplete.length && !res.loading && <p>No todos</p>}
+
+                <Mutation mutation={updateTodoMutation.mutation}>
+                  {updateTodo => (
+                    <ToasterConsumer>
+                      {toaster => (
+                        <List
+                          pressDelay={200}
+                          lockAxis="y"
+                          helperClass="dragged-item"
+                          onSortEnd={({ oldIndex, newIndex }) => {
+                            this.onSortEnd(
+                              oldIndex,
+                              newIndex,
+                              updateTodo,
+                              incomplete,
+                              toaster.actions.addToast
+                            )
+                          }}
+                          oppositeLength={completeLength}
+                          selected={this.state.selected}
+                          toggleSelected={this.toggleSelected}
+                          items={incomplete}
+                        />
+                      )}
+                    </ToasterConsumer>
+                  )}
+                </Mutation>
 
                 <MultiToggle
+                  todos={incomplete}
                   oppositeLength={completeLength}
                   setSelected={this.setSelected}
                   clearSelected={this.clearSelected}

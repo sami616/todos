@@ -11,16 +11,18 @@ export const mutation = gql`
 
 export const variables = props => ({
   data: { ...props.properties },
-  where: { id_in: props.selected }
+  where: { id_in: props.selected.map(sel => sel.id) }
 })
 
 export const update = (cache, { data: { updateManyTodoes } }, variables) => {
   let { todoes } = cache.readQuery({ query })
-  const { ids, properties } = variables
+  const { selected, properties } = variables
+
+  const selectedIDs = selected.map(sel => sel.id)
 
   todoes = todoes.map(todo => {
-    if (ids.includes(todo.id)) {
-      return (todo = { ...todo, ...properties })
+    if (selectedIDs.includes(todo.id)) {
+      return { ...todo, ...properties }
     } else {
       return todo
     }
