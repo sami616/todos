@@ -43,19 +43,9 @@ const MultiDelete = props => {
       props.setSelected(selected)
       addToast({
         type: 'error',
-        msg: 'Problem moving todo'
+        msg: 'Problem deleteing your todo'
       })
     }
-
-    // try {
-    //   await deleteManyTodos()
-    // } catch (e) {
-    //   props.setSelected(selected)
-    //   addToast({
-    //     type: 'error',
-    //     msg: 'Whoops, there was a problem deleting your todos'
-    //   })
-    // }
   }
 
   return (

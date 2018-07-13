@@ -1,66 +1,117 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Mutation } from 'react-apollo'
-import * as updateManyTodos from '../../api/remote/todos/mutations/updateManyTodos'
-import * as updateTodo from '../../api/remote/todos/mutations/updateTodo'
+import * as updateTodoStuff from '../../api/remote/todos/mutations/updateTodo'
 import { ToasterConsumer } from '../toaster/context'
 
 const MultiToggle = props => {
-  const handleToggle = async (toggleManyTodos, updateIndex, addToast) => {
+  const handleToggle = async (updateTodo, addToast) => {
     const selected = [...props.selected]
+    const todos = [...props.todos]
+    let oppLength = props.oppositeLength
     props.clearSelected()
+    const promisesToAwait = []
+
+    selected.forEach((todo, index) => {
+      promisesToAwait.push(
+        updateTodo({
+          variables: updateTodoStuff.variables({
+            id: todo.id,
+            properties: {
+              completed: !props.completed,
+              position: oppLength
+            }
+          }),
+          optimisticResponse: updateTodoStuff.optimisticResponse({
+            ...todo,
+            completed: !props.completed
+          })
+        })
+      )
+      oppLength++
+    })
+
+    const selectedIDs = selected.map(item => item.id)
+
+    const filtered = props.todos.filter(
+      propTodo => !selectedIDs.includes(propTodo.id)
+    )
+
+    filtered.forEach((todo, index) => {
+      promisesToAwait.push(
+        updateTodo({
+          variables: updateTodoStuff.variables({
+            id: todo.id,
+            properties: {
+              position: index
+            }
+          }),
+          optimisticResponse: updateTodoStuff.optimisticResponse({
+            ...todo,
+            position: index
+          })
+        })
+      )
+    })
+
     try {
-      await toggleManyTodos()
+      await Promise.all(promisesToAwait)
     } catch (e) {
       props.setSelected(selected)
       addToast({
         type: 'error',
-        msg: 'Whoops, there was a problem updating your todos'
+        msg: 'Problem moving todo'
       })
     }
+
+    // try {
+    //   await toggleManyTodos()
+    // } catch (e) {
+    //   props.setSelected(selected)
+    //   addToast({
+    //     type: 'error',
+    //     msg: 'Whoops, there was a problem updating your todos'
+    //   })
+    // }
   }
 
   return (
-    <Mutation
-      variables={updateManyTodos.variables({
-        selected: props.selected,
-        properties: { completed: !props.completed }
-      })}
-      mutation={updateManyTodos.mutation}
-      update={(cache, data) =>
-        updateManyTodos.update(cache, data, {
-          selected: props.selected,
-          properties: {
-            completed: !props.completed
-          }
-        })
-      }
-      optimisticResponse={updateManyTodos.optimisticResponse({
-        count: props.selected.length
-      })}>
-      {updateManyTodos =>
-        props.selected.length !== 0 && (
-          <ToasterConsumer>
-            {toaster => (
-              <Mutation mutation={updateTodo.mutation}>
-                {updateIndex => (
-                  <ToggleBtn
-                    onClick={() => {
-                      handleToggle(
-                        updateManyTodos,
-                        updateIndex,
-                        toaster.actions.addToast
-                      )
-                    }}>
-                    Mark as {props.completed ? 'incomplete' : 'complete'}
-                  </ToggleBtn>
-                )}
-              </Mutation>
+    // <Mutation
+    //   variables={updateManyTodos.variables({
+    //     selected: props.selected,
+    //     properties: { completed: !props.completed }
+    //   })}
+    //   mutation={updateManyTodos.mutation}
+    //   update={(cache, data) =>
+    //     updateManyTodos.update(cache, data, {
+    //       selected: props.selected,
+    //       properties: {
+    //         completed: !props.completed
+    //       }
+    //     })
+    //   }
+    //   optimisticResponse={updateManyTodos.optimisticResponse({
+    //     count: props.selected.length
+    //   })}>
+    //   {updateManyTodos =>
+    props.selected.length !== 0 && (
+      <ToasterConsumer>
+        {toaster => (
+          <Mutation mutation={updateTodoStuff.mutation}>
+            {updateTodo => (
+              <ToggleBtn
+                onClick={() => {
+                  handleToggle(updateTodo, toaster.actions.addToast)
+                }}>
+                Mark as {props.completed ? 'incomplete' : 'complete'}
+              </ToggleBtn>
             )}
-          </ToasterConsumer>
-        )
-      }
-    </Mutation>
+          </Mutation>
+        )}
+      </ToasterConsumer>
+    )
+    //   }
+    // </Mutation>
   )
 }
 

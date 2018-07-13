@@ -39,7 +39,7 @@ const DeleteTodo = props => {
     } catch (e) {
       addToast({
         type: 'error',
-        msg: 'Problem moving todo'
+        msg: 'Problem deleting todo'
       })
     }
   }
