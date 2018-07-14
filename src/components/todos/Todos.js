@@ -22,5 +22,5 @@ const Todos = () => {
 export default Todos
 
 const AppWrap = styled.div`
-  padding: 20px;
+  padding: 10px;
 `
