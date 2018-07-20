@@ -6,10 +6,10 @@ const Form = styled.form`
   input {
     outline: none;
     padding: 20px;
-    width: calc(100% - 100px);
-    border-radius: 4px 0 0 4px;
+    width: 100%;
+    border-radius: 4px;
     border: 1px solid #ccc;
-    border-right: none;
+    margin: 0 0 5px 0;
     font-size: 16px;
     font-family: Roboto;
     font-weight: 300;
@@ -25,6 +25,7 @@ const Form = styled.form`
     border: none;
     flex: 1 0 auto;
     outline: none;
+    border-radius: 4px;
     &.inputButton {
       background: ${props => props.theme.secondaryColor};
       border-radius: 0 4px 4px 0;
@@ -42,7 +43,7 @@ const Form = styled.form`
     font-size: 16px;
   }
 `
-const FormDiv = Form.withComponent('div') // huh? prquois no wokingz? when wors update in multi toggle
+const FormDiv = Form.withComponent('div')
 
 export default Form
 export { FormDiv }

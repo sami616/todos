@@ -53,7 +53,7 @@ class EditTodo extends Component {
                   onChange={e => this.setState({ editTitle: e.target.value })}
                   value={this.state.editTitle}
                 />
-                <button className="inputButton">Update</button>
+                <button className="green">Update</button>
               </Form>
             )}
           </ToasterConsumer>

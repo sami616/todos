@@ -16,9 +16,9 @@ const MultiDelete = props => {
 
     const selectedIDs = selected.map(item => item.id)
 
-    const filtered = props.todos.filter(
-      propTodo => !selectedIDs.includes(propTodo.id)
-    )
+    const filtered = props.todos
+      .filter(propTodo => !selectedIDs.includes(propTodo.id))
+      .reverse()
 
     filtered.forEach((todo, index) => {
       promisesToAwait.push(

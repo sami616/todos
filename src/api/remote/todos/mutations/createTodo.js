@@ -18,7 +18,8 @@ export const variables = props => ({
 
 export const update = (cache, { data: { createTodo } }) => {
   const { todoes } = cache.readQuery({ query })
-  cache.writeQuery({ query, data: { todoes: [...todoes, createTodo] } })
+  //cache.writeQuery({ query, data: { todoes: [...todoes, createTodo] } })
+  cache.writeQuery({ query, data: { todoes: [createTodo, ...todoes] } })
 }
 
 export const optimisticResponse = props => ({

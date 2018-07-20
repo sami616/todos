@@ -13,9 +13,9 @@ const DeleteTodo = props => {
 
     promisesToAwait.push(deleteTodo())
 
-    const filtered = props.todos.filter(
-      propTodo => propTodo.id !== props.todo.id
-    )
+    const filtered = props.todos
+      .filter(propTodo => propTodo.id !== props.todo.id)
+      .reverse()
 
     filtered.forEach((todo, index) => {
       promisesToAwait.push(

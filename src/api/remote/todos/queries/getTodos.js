@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 
 export const query = gql`
   query {
-    todoes {
+    todoes(orderBy: position_DESC) {
       id
       title
       completed

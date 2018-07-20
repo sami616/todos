@@ -7,7 +7,6 @@ import { ToasterConsumer } from '../toaster/context'
 const MultiToggle = props => {
   const handleToggle = async (updateTodo, addToast) => {
     const selected = [...props.selected]
-    const todos = [...props.todos]
     let oppLength = props.oppositeLength
     props.clearSelected()
     const promisesToAwait = []
@@ -33,9 +32,9 @@ const MultiToggle = props => {
 
     const selectedIDs = selected.map(item => item.id)
 
-    const filtered = props.todos.filter(
-      propTodo => !selectedIDs.includes(propTodo.id)
-    )
+    const filtered = props.todos
+      .filter(propTodo => !selectedIDs.includes(propTodo.id))
+      .reverse()
 
     filtered.forEach((todo, index) => {
       promisesToAwait.push(
@@ -63,37 +62,9 @@ const MultiToggle = props => {
         msg: 'Problem moving todo'
       })
     }
-
-    // try {
-    //   await toggleManyTodos()
-    // } catch (e) {
-    //   props.setSelected(selected)
-    //   addToast({
-    //     type: 'error',
-    //     msg: 'Whoops, there was a problem updating your todos'
-    //   })
-    // }
   }
 
   return (
-    // <Mutation
-    //   variables={updateManyTodos.variables({
-    //     selected: props.selected,
-    //     properties: { completed: !props.completed }
-    //   })}
-    //   mutation={updateManyTodos.mutation}
-    //   update={(cache, data) =>
-    //     updateManyTodos.update(cache, data, {
-    //       selected: props.selected,
-    //       properties: {
-    //         completed: !props.completed
-    //       }
-    //     })
-    //   }
-    //   optimisticResponse={updateManyTodos.optimisticResponse({
-    //     count: props.selected.length
-    //   })}>
-    //   {updateManyTodos =>
     props.selected.length !== 0 && (
       <ToasterConsumer>
         {toaster => (
@@ -110,8 +81,6 @@ const MultiToggle = props => {
         )}
       </ToasterConsumer>
     )
-    //   }
-    // </Mutation>
   )
 }
 

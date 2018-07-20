@@ -36,7 +36,7 @@ class Incomplete extends Component {
   }
 
   onSortEnd = async (oldIndex, newIndex, updateTodo, todos, addToast) => {
-    const sortedTodos = arrayMove(todos, oldIndex, newIndex)
+    const sortedTodos = arrayMove(todos, oldIndex, newIndex).reverse()
 
     const promisesToAwait = []
     sortedTodos.forEach((todo, index) => {
@@ -78,7 +78,7 @@ class Incomplete extends Component {
               incomplete = res.data.todoes
                 .filter(todo => !todo.completed)
                 .sort(function(a, b) {
-                  return a.position - b.position
+                  return b.position - a.position
                 })
 
               completeLength = res.data.todoes.filter(todo => todo.completed)
@@ -90,7 +90,9 @@ class Incomplete extends Component {
                 <AddTodo count={incomplete.length} />
                 {res.loading && <p>Loading</p>}
                 {res.error && <p>Error</p>}
-                {!incomplete.length && !res.loading && <p>No todos</p>}
+                {!incomplete.length &&
+                  !res.loading &&
+                  !res.error && <p>No todos</p>}
 
                 <Mutation mutation={updateTodoMutation.mutation}>
                   {updateTodo => (

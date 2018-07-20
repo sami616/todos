@@ -10,7 +10,8 @@ import { arrayMove } from 'react-sortable-hoc'
 
 class Complete extends Component {
   state = {
-    selected: []
+    selected: [],
+    all: false
   }
 
   toggleSelected = todo => {
@@ -21,6 +22,18 @@ class Complete extends Component {
     } else {
       this.setState({ selected: [...this.state.selected, todo] })
     }
+  }
+
+  toggleAll = todos => {
+    this.setState(({ all }) => {
+      if (all) {
+        this.setSelected([])
+        return { all: false }
+      } else {
+        this.setSelected(todos)
+        return { all: true }
+      }
+    })
   }
 
   setSelected = todoArr => {
@@ -36,7 +49,7 @@ class Complete extends Component {
   }
 
   onSortEnd = async (oldIndex, newIndex, updateTodo, todos, addToast) => {
-    const sortedTodos = arrayMove(todos, oldIndex, newIndex)
+    const sortedTodos = arrayMove(todos, oldIndex, newIndex).reverse()
 
     const promisesToAwait = []
     sortedTodos.forEach((todo, index) => {
@@ -75,7 +88,7 @@ class Complete extends Component {
           const complete = res.data.todoes
             .filter(todo => todo.completed)
             .sort(function(a, b) {
-              return a.position - b.position
+              return b.position - a.position
             })
 
           const incompleteLength = res.data.todoes.filter(
@@ -125,6 +138,8 @@ class Complete extends Component {
                   completed={true}
                   selected={this.state.selected}
                 />
+
+                <button onClick={() => this.toggleAll(complete)}>All</button>
               </div>
             </F>
           )
