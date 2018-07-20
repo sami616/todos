@@ -24,18 +24,6 @@ class Complete extends Component {
     }
   }
 
-  toggleAll = todos => {
-    this.setState(({ all }) => {
-      if (all) {
-        this.setSelected([])
-        return { all: false }
-      } else {
-        this.setSelected(todos)
-        return { all: true }
-      }
-    })
-  }
-
   setSelected = todoArr => {
     this.setState(state => ({
       selected: todoArr
@@ -138,8 +126,6 @@ class Complete extends Component {
                   completed={true}
                   selected={this.state.selected}
                 />
-
-                <button onClick={() => this.toggleAll(complete)}>All</button>
               </div>
             </F>
           )
