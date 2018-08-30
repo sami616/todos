@@ -17,9 +17,7 @@ export const variables = props => ({
 
 export const update = (cache, { data: { deleteTodo } }) => {
   let { todoes } = cache.readQuery({ query })
-
   todoes = todoes.filter(todo => todo.id !== deleteTodo.id)
-
   cache.writeQuery({ query, data: { todoes } })
 }
 
